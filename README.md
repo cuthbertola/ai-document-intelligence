@@ -87,8 +87,8 @@ Database: PostgreSQL
 
 **Olawale Samuel Badekale**
 - Email: Badekaleolawale@gmail.com
-- LinkedIn: [Add your profile]
-- GitHub: [Add your profile]
+- LinkedIn: https://www.linkedin.com/in/badekaleolawale/
+- GitHub: https://github.com/cuthbertola
 
 ## 📄 License
 
