@@ -1,0 +1,260 @@
+import React, { useCallback, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { Upload, File, X, CheckCircle, AlertCircle, FileText, Loader } from 'lucide-react';
+import axios, { AxiosResponse } from 'axios';
+
+const API_URL = 'http://localhost:8000';
+
+interface UploadedFile {
+  file: File;
+  status: 'pending' | 'uploading' | 'success' | 'error';
+  result?: any;
+  error?: string;
+}
+
+interface UploadResponse {
+  document_id: string;
+  filename: string;
+  status: string;
+  success?: boolean;
+  confidence?: number;
+  page_count?: number;
+  classification?: string;
+  document_type?: string;
+}
+
+export const DocumentUpload: React.FC = () => {
+  const [files, setFiles] = useState<UploadedFile[]>([]);
+  const [useAdvanced, setUseAdvanced] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [useOCR, setUseOCR] = useState(true);
+
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    const newFiles = acceptedFiles.map(file => ({
+      file,
+      status: 'pending' as const,
+    }));
+    setFiles(prev => [...prev, ...newFiles]);
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'application/pdf': ['.pdf'],
+      'image/*': ['.png', '.jpg', '.jpeg', '.tiff', '.bmp'],
+      'text/plain': ['.txt'],
+    },
+    maxSize: 10 * 1024 * 1024, // 10MB
+  });
+
+  const processFiles = async () => {
+    setIsUploading(true);
+    
+    for (let i = 0; i < files.length; i++) {
+      if (files[i].status !== 'pending') continue;
+      
+      setFiles(prev => prev.map((f, idx) => 
+        idx === i ? { ...f, status: 'uploading' as const } : f
+      ));
+
+      const formData = new FormData();
+      formData.append('file', files[i].file);
+
+      try {
+        let response: AxiosResponse<UploadResponse>;
+        
+        if (useOCR) {
+          // Use OCR endpoint for processing
+          response = await axios.post<UploadResponse>(
+            `${API_URL}/api/v1/upload`,
+            formData,
+            {
+              params: { use_advanced: useAdvanced },
+              headers: { 'Content-Type': 'multipart/form-data' },
+            }
+          );
+        } else {
+          // Use regular upload endpoint
+          response = await axios.post<UploadResponse>(
+            `${API_URL}/api/v1/upload`,
+            formData,
+            {
+              headers: { 'Content-Type': 'multipart/form-data' },
+            }
+          );
+        }
+
+        setFiles(prev => prev.map((f, idx) => 
+          idx === i ? { ...f, status: 'success' as const, result: response.data } : f
+        ));
+      } catch (error: any) {
+        setFiles(prev => prev.map((f, idx) => 
+          idx === i ? { 
+            ...f, 
+            status: 'error' as const, 
+            error: error.response?.data?.detail || error.message || 'Upload failed' 
+          } : f
+        ));
+      }
+    }
+    
+    setIsUploading(false);
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const clearAll = () => {
+    setFiles([]);
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return <FileText className="h-5 w-5 text-gray-500" />;
+      case 'uploading':
+        return <Loader className="h-5 w-5 text-blue-500 animate-spin" />;
+      case 'success':
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
+      case 'error':
+        return <AlertCircle className="h-5 w-5 text-red-500" />;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="card">
+      <h2 className="text-2xl font-bold mb-6">Upload Documents</h2>
+      
+      <div
+        {...getRootProps()}
+        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-200
+          ${isDragActive 
+            ? 'border-primary-500 bg-primary-50 scale-[1.02]' 
+            : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50'}`}
+      >
+        <input {...getInputProps()} />
+        <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+        {isDragActive ? (
+          <p className="text-primary-600 font-medium">Drop the files here...</p>
+        ) : (
+          <div>
+            <p className="text-gray-600">Drag & drop documents here, or click to select</p>
+            <p className="text-sm text-gray-500 mt-2">
+              Supports PDF, Images (PNG, JPG, TIFF), and Text files up to 10MB
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Processing Options */}
+      <div className="mt-6 space-y-3">
+        <label className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={useOCR}
+            onChange={(e) => setUseOCR(e.target.checked)}
+            className="rounded text-primary-600"
+          />
+          <span className="text-sm">Process with OCR (extract text from documents)</span>
+        </label>
+        
+        {useOCR && (
+          <label className="flex items-center space-x-2 ml-6">
+            <input
+              type="checkbox"
+              checked={useAdvanced}
+              onChange={(e) => setUseAdvanced(e.target.checked)}
+              className="rounded text-primary-600"
+            />
+            <span className="text-sm">Use advanced ML-based layout analysis</span>
+          </label>
+        )}
+      </div>
+
+      {/* Files List */}
+      {files.length > 0 && (
+        <div className="mt-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="font-semibold">Files ({files.length})</h3>
+            <button 
+              onClick={clearAll} 
+              className="text-red-600 hover:text-red-700 text-sm font-medium"
+            >
+              Clear all
+            </button>
+          </div>
+          
+          <div className="space-y-2 max-h-64 overflow-y-auto">
+            {files.map((file, index) => (
+              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3 flex-1">
+                  {getStatusIcon(file.status)}
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900">{file.file.name}</p>
+                    <p className="text-xs text-gray-500">
+                      {(file.file.size / 1024).toFixed(2)} KB
+                      {file.result && file.status === 'success' && (
+                        <>
+                          {file.result.confidence && (
+                            <span className="ml-2">• Confidence: {file.result.confidence}%</span>
+                          )}
+                          {file.result.classification && (
+                            <span className="ml-2">• Type: {file.result.classification}</span>
+                          )}
+                        </>
+                      )}
+                      {file.error && (
+                        <span className="text-red-600 ml-2">• {file.error}</span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  {file.status === 'pending' && (
+                    <button 
+                      onClick={() => removeFile(index)}
+                      className="p-1 hover:bg-gray-200 rounded"
+                    >
+                      <X className="h-5 w-5 text-gray-500 hover:text-red-600" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={processFiles}
+            disabled={isUploading || files.every(f => f.status !== 'pending')}
+            className="btn-primary w-full mt-4 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
+          >
+            {isUploading ? (
+              <>
+                <Loader className="animate-spin h-5 w-5 mr-2" />
+                Processing...
+              </>
+            ) : (
+              'Process Documents'
+            )}
+          </button>
+        </div>
+      )}
+
+      {/* Success Summary */}
+      {!isUploading && files.some(f => f.status === 'success') && (
+        <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div className="flex items-center">
+            <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
+            <p className="text-green-800 font-medium">
+              {files.filter(f => f.status === 'success').length} document(s) processed successfully
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};

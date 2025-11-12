@@ -1,0 +1,31 @@
+.env
+
+# Node
+node_modules/
+npm-debug.log*
+build/
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+uploads/
+processed/
+*.log
+venv/
+node_modules/
+__pycache__/
+*.pyc
+.env
+data/uploads/*
+data/processed/*
+.DS_Store
+*.log

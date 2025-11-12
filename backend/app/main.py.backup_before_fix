@@ -1,0 +1,241 @@
+"""
+Updated main application with database integration.
+"""
+from fastapi import FastAPI, File, UploadFile, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
+# from sqlalchemy.orm import Session  # TODO: Uncomment when database is ready
+import os
+from typing import List
+from datetime import datetime
+from app.core.config import settings
+
+# Import OCR router
+from app.api.routers import ocr
+
+# TODO: Uncomment these imports when database and tasks are ready
+# from app.models.database import engine, Base, get_db
+# from app.models.document import Document
+# from app.tasks.document_tasks import process_document_task
+
+# TODO: Uncomment when database is ready
+# Create tables
+# Base.metadata.create_all(bind=engine)
+
+app = FastAPI(
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
+    description="AI-powered document processing platform with OCR capabilities"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include routers
+app.include_router(ocr.router)  # Add OCR endpoints
+
+# Add root endpoint
+@app.get("/")
+def read_root():
+    return {
+        "message": "Welcome to Document Intelligence Platform",
+        "version": settings.APP_VERSION,
+        "status": "running",
+        "features": {
+            "ocr": "available",
+            "advanced_ocr": "available",
+            "document_upload": "available"
+        }
+    }
+
+# Add health check
+@app.get("/health")
+def health_check():
+    return {"status": "healthy", "timestamp": datetime.now()}
+
+@app.post("/api/v1/upload")
+async def upload_document(
+    file: UploadFile = File(...),
+    # db: Session = Depends(get_db)  # TODO: Uncomment when database is ready
+):
+    """Enhanced upload with database and background processing."""
+    
+    # Validate file
+    contents = await file.read()
+    file_size = len(contents)
+    
+    if file_size > settings.MAX_UPLOAD_SIZE:
+        raise HTTPException(status_code=413, detail="File too large")
+    
+    # Save file
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    safe_filename = f"{timestamp}_{file.filename}"
+    file_path = os.path.join(settings.UPLOAD_FOLDER, safe_filename)
+    
+    with open(file_path, "wb") as buffer:
+        buffer.write(contents)
+    
+    # TODO: Uncomment when database is ready
+    """
+    # Create database record
+    db_document = Document(
+        filename=file.filename,
+        file_type=os.path.splitext(file.filename)[1],
+        file_size=file_size,
+        original_path=file_path,
+        status="pending"
+    )
+    db.add(db_document)
+    db.commit()
+    db.refresh(db_document)
+    
+    # Queue background processing task
+    task = process_document_task.delay(db_document.id, file_path)
+    
+    return {
+        "document_id": db_document.id,
+        "filename": file.filename,
+        "status": "processing",
+        "task_id": task.id
+    }
+    """
+    
+    # Temporary response without database
+    return {
+        "message": "File uploaded successfully",
+        "filename": safe_filename,
+        "original_name": file.filename,
+        "size": file_size,
+        "type": os.path.splitext(file.filename)[1],
+        "status": "uploaded"
+    }
+
+@app.get("/api/v1/documents")
+def list_documents(
+    skip: int = 0,
+    limit: int = 10,
+    # db: Session = Depends(get_db)  # TODO: Uncomment when database is ready
+):
+    """List all documents with pagination."""
+    
+    # TODO: Uncomment when database is ready
+    """
+    documents = db.query(Document).offset(skip).limit(limit).all()
+    total = db.query(Document).count()
+    
+    return {
+        "documents": documents,
+        "total": total,
+        "skip": skip,
+        "limit": limit
+    }
+    """
+    
+    # Temporary: List files from upload folder
+    try:
+        files = os.listdir(settings.UPLOAD_FOLDER)
+        documents = []
+        
+        for idx, filename in enumerate(files[skip:skip+limit], start=skip):
+            file_path = os.path.join(settings.UPLOAD_FOLDER, filename)
+            if os.path.isfile(file_path):
+                stat = os.stat(file_path)
+                documents.append({
+                    "id": idx + 1,
+                    "filename": filename,
+                    "size": stat.st_size,
+                    "uploaded_at": datetime.fromtimestamp(stat.st_ctime),
+                    "status": "uploaded"
+                })
+        
+        return {
+            "documents": documents,
+            "total": len(files),
+            "skip": skip,
+            "limit": limit
+        }
+    except Exception as e:
+        return {
+            "documents": [],
+            "total": 0,
+            "skip": skip,
+            "limit": limit
+        }
+
+@app.get("/api/v1/documents/{document_id}")
+def get_document(
+    document_id: int,
+    # db: Session = Depends(get_db)  # TODO: Uncomment when database is ready
+):
+    """Get a specific document by ID."""
+    
+    # TODO: Uncomment when database is ready
+    """
+    document = db.query(Document).filter(Document.id == document_id).first()
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    return document
+    """
+    
+    # Temporary: Get file by index
+    try:
+        files = os.listdir(settings.UPLOAD_FOLDER)
+        if document_id <= 0 or document_id > len(files):
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        filename = files[document_id - 1]
+        file_path = os.path.join(settings.UPLOAD_FOLDER, filename)
+        
+        if os.path.isfile(file_path):
+            stat = os.stat(file_path)
+            return {
+                "id": document_id,
+                "filename": filename,
+                "size": stat.st_size,
+                "uploaded_at": datetime.fromtimestamp(stat.st_ctime),
+                "status": "uploaded"
+            }
+    except (IndexError, OSError):
+        raise HTTPException(status_code=404, detail="Document not found")
+
+# Process document with OCR (integrates with the OCR router)
+@app.post("/api/v1/process/{document_id}")
+async def process_document_ocr(document_id: int):
+    """Process a document with OCR."""
+    try:
+        # Import OCR service here to avoid circular imports
+        from app.services.ocr_service import ocr_service
+        
+        # Get the file from uploads folder
+        files = os.listdir(settings.UPLOAD_FOLDER)
+        if document_id <= 0 or document_id > len(files):
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        filename = files[document_id - 1]
+        file_path = os.path.join(settings.UPLOAD_FOLDER, filename)
+        
+        # Process with OCR
+        result = ocr_service.process_document(file_path)
+        
+        if result.success:
+            return {
+                "document_id": document_id,
+                "filename": filename,
+                "text_preview": result.text[:500] + "..." if len(result.text) > 500 else result.text,
+                "full_text": result.text,
+                "classification": result.metadata.get("classification", "Unknown"),
+                "word_count": result.metadata.get("word_count", 0),
+                "char_count": result.metadata.get("char_count", 0),
+                "confidence": round(result.confidence, 2),
+                "document_type": result.document_type.value
+            }
+        else:
+            raise HTTPException(status_code=500, detail=result.metadata.get("error", "Processing failed"))
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
