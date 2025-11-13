@@ -8,7 +8,7 @@ from app.core.config import settings
 from sqlalchemy.orm import Session
 from fastapi import Depends
 from app.db.session import get_db
-from app.api.routers import ocr, process
+from app.api.routers import ocr, process, auth
 
 app = FastAPI(title=settings.APP_NAME, version=settings.APP_VERSION)
 
@@ -22,6 +22,7 @@ app.add_middleware(
 
 app.include_router(ocr.router)
 app.include_router(process.router)
+app.include_router(auth.router, prefix="/api/v1")
 
 @app.get("/")
 def read_root():
