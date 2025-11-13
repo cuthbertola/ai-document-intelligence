@@ -240,3 +240,28 @@ You've built a production-ready ML portfolio project that demonstrates:
 - Works on any machine with Docker installed
 
 
+
+
+## ✅ Phase 7: Authentication & Security - COMPLETE
+
+**Added:**
+- JWT token-based authentication
+- User registration endpoint
+- User login endpoint with password hashing (bcrypt)
+- Protected /me endpoint
+- OAuth2 password flow
+- Security utilities (password hashing, token generation)
+- Pydantic schemas for request/response validation
+
+**Security Features:**
+- Passwords hashed with bcrypt
+- JWT tokens with expiration (30 minutes)
+- OAuth2PasswordBearer for protected routes
+- SQLAlchemy User model with authentication fields
+
+**API Endpoints:**
+- POST /api/v1/auth/register - Register new user
+- POST /api/v1/auth/login - Login and get JWT token
+- GET /api/v1/auth/me - Get current user (protected)
+
+
