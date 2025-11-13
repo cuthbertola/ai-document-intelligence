@@ -1,68 +1,51 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:15
+  db:
+    image: postgres:13
+    container_name: doc_intelligence_db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: document_db
+      POSTGRES_USER: docuser
+      POSTGRES_PASSWORD: docpassword
+      POSTGRES_DB: document_intelligence
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
-      - document_network
-
-  redis:
-    image: redis:7
-    ports:
-      - "6379:6379"
-    networks:
-      - document_network
+      - app-network
 
   backend:
     build: ./backend
+    container_name: doc_intelligence_backend
+    environment:
+      DATABASE_URL: postgresql://docuser:docpassword@db:5432/document_intelligence
+      UPLOAD_FOLDER: /app/data/uploads
+      PROCESSED_FOLDER: /app/data/processed
+    volumes:
+      - ./backend/data:/app/data
     ports:
-      - "8000:8000"
-    environment:
-      DATABASE_URL: postgresql://postgres:password@postgres/document_db
-      REDIS_URL: redis://redis:6379/0
+      - "8001:8001"
     depends_on:
-      - postgres
-      - redis
-    volumes:
-      - ./data:/app/data
+      - db
     networks:
-      - document_network
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-
-  celery:
-    build: ./backend
-    environment:
-      DATABASE_URL: postgresql://postgres:password@postgres/document_db
-      REDIS_URL: redis://redis:6379/0
-    depends_on:
-      - postgres
-      - redis
-    volumes:
-      - ./data:/app/data
-    networks:
-      - document_network
-    command: celery -A app.core.celery_app worker --loglevel=info
+      - app-network
 
   frontend:
-    build: ./frontend/document-ui
+    build: ./frontend
+    container_name: doc_intelligence_frontend
+    environment:
+      REACT_APP_API_URL: http://localhost:8001
     ports:
       - "3000:3000"
     depends_on:
       - backend
     networks:
-      - document_network
-
-networks:
-  document_network:
-    driver: bridge
+      - app-network
 
 volumes:
   postgres_data:
+
+networks:
+  app-network:
+    driver: bridge

@@ -2,22 +2,24 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-# Install system dependencies
 RUN apt-get update && apt-get install -y \
     tesseract-ocr \
-    poppler-utils \
+    libtesseract-dev \
     libpq-dev \
     gcc \
+    g++ \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+RUN python -m spacy download en_core_web_sm
 
-# Copy application
 COPY . .
+RUN mkdir -p data/uploads data/processed
 
-# Create necessary directories
-RUN mkdir -p /app/data/uploads /app/data/processed /app/data/vectors
+EXPOSE 8001
+ENV PYTHONUNBUFFERED=1
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
