@@ -402,12 +402,12 @@ tests/test_ner.py::test_entity_extraction PASSED
 
 **Olawale Samuel Badekale**
 
-Machine Learning Engineer passionate about building production-grade AI systems.
+Machine Learning Engineer with MSc in Computer Science, passionate about building production-grade AI systems.
 
 - 📧 Email: badekaleolawale@gmail.com
 - 💼 LinkedIn: [linkedin.com/in/olawale-badekale](https://linkedin.com/in/olawale-badekale)
 - 🐙 GitHub: [@cuthbertola](https://github.com/cuthbertola)
-- 📍 Location: Aberdeen, UK
+- 📍 Location: Coventry, UK
 
 **Other Projects:**
 - [Project 1](#) - Brief description
@@ -427,11 +427,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ---
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
 
 ## 🙏 Acknowledgments
 
