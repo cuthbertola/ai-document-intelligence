@@ -8,7 +8,7 @@
 
 A production-grade, full-stack AI system for intelligent document processing with machine learning classification, OCR, named entity recognition, and comprehensive experiment tracking.
 
-![Platform Demo](https://via.placeholder.com/800x400/1a1a2e/edf2f4?text=AI+Document+Intelligence+Platform)
+![Platform Demo](docs/screenshots/dashboard.png)
 
 ---
 
@@ -397,6 +397,35 @@ tests/test_ner.py::test_entity_extraction PASSED
 ![MLflow](https://via.placeholder.com/800x400/2d3748/edf2f4?text=MLflow+Experiment+Tracking)
 
 ---
+
+
+---
+
+## 📸 Screenshots
+
+### Dashboard Overview
+![Dashboard](docs/screenshots/dashboard.png)
+*Main dashboard showing 10 total documents, 65.2% average confidence, and OCR online status*
+
+### Document Upload Interface
+![Upload](docs/screenshots/upload.png)
+*Clean drag-and-drop interface supporting PDF, images (PNG, JPG, TIFF), and text files*
+
+### Document Library
+![Document Library](docs/screenshots/document-library.png)
+*Comprehensive document management with status tracking, type classification, and bulk actions*
+
+### Document Processing & Entity Extraction
+![Classification Results](docs/screenshots/classification-results.png)
+*Document classified as Contract with 93.61% confidence, showing extracted entities:*
+- **Persons:** Nurul Bhuiyan, Siant J Ogbo, and more
+- **Organizations:** Coventry University, DPC, THD, CBDFIGs
+- **Dates:** June 16, 2014, 12 Weeks
+- **Locations:** Li
+
+### MLflow Experiment Tracking
+![MLflow Tracking](docs/screenshots/mlflow-tracking.png)
+*Complete ML pipeline observability with 37+ classification runs tracked, showing metrics, parameters, and model performance over time*
 
 ## 👤 Author
 
