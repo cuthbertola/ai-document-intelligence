@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    container_name: doc_intelligence_db
+    environment:
+      POSTGRES_USER: docuser
+      POSTGRES_PASSWORD: docpassword
+      POSTGRES_DB: document_intelligence
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    
+  mlflow:
+    build: ./backend
+    container_name: doc_intelligence_mlflow
+    command: mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend/mlruns:/app/mlruns
+      - ./backend/mlflow.db:/app/mlflow.db
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+
+
+  backend:
+    build: ./backend
+    container_name: doc_intelligence_backend
+    environment:
+      DATABASE_URL: postgresql://docuser:docpassword@db:5432/document_intelligence
+      UPLOAD_FOLDER: /app/data/uploads
+      PROCESSED_FOLDER: /app/data/processed
+    volumes:
+      - ./backend/data:/app/data
+    ports:
+      - "8001:8001"
+    depends_on:
+      - db
+    
+  mlflow:
+    build: ./backend
+    container_name: doc_intelligence_mlflow
+    command: mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend/mlruns:/app/mlruns
+      - ./backend/mlflow.db:/app/mlflow.db
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+
+
+  frontend:
+    build: ./frontend
+    container_name: doc_intelligence_frontend
+    environment:
+      REACT_APP_API_URL: http://localhost:8001
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    
+  mlflow:
+    build: ./backend
+    container_name: doc_intelligence_mlflow
+    command: mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend/mlruns:/app/mlruns
+      - ./backend/mlflow.db:/app/mlflow.db
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+
+
+volumes:
+  postgres_data:
+
+
+  mlflow:
+    build: ./backend
+    container_name: doc_intelligence_mlflow
+    command: mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend/mlruns:/app/mlruns
+      - ./backend/mlflow.db:/app/mlflow.db
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+
+networks:
+  app-network:
+    driver: bridge

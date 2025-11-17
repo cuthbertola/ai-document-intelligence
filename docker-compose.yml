@@ -13,7 +13,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - app-network
+      - doc_intelligence_network
 
   backend:
     build: ./backend
@@ -22,30 +22,51 @@ services:
       DATABASE_URL: postgresql://docuser:docpassword@db:5432/document_intelligence
       UPLOAD_FOLDER: /app/data/uploads
       PROCESSED_FOLDER: /app/data/processed
+      MLFLOW_TRACKING_URI: http://mlflow:5000
     volumes:
       - ./backend/data:/app/data
     ports:
       - "8001:8001"
     depends_on:
       - db
+      - mlflow
     networks:
-      - app-network
+      - doc_intelligence_network
 
   frontend:
     build: ./frontend
     container_name: doc_intelligence_frontend
-    environment:
-      REACT_APP_API_URL: http://localhost:8001
     ports:
       - "3000:3000"
     depends_on:
       - backend
     networks:
-      - app-network
+      - doc_intelligence_network
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.9.2
+    container_name: doc_intelligence_mlflow
+    ports:
+      - "5001:5000"
+    volumes:
+      - mlflow-data:/mlflow
+    environment:
+      - MLFLOW_BACKEND_STORE_URI=sqlite:///mlflow/mlflow.db
+      - MLFLOW_DEFAULT_ARTIFACT_ROOT=/mlflow/artifacts
+    command: mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlflow/mlflow.db --default-artifact-root /mlflow/artifacts --gunicorn-opts "--timeout 300 --workers 1 --worker-class sync"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+    networks:
+      - doc_intelligence_network
+
+networks:
+  doc_intelligence_network:
+    driver: bridge
 
 volumes:
   postgres_data:
-
-networks:
-  app-network:
-    driver: bridge
+  mlflow-data:

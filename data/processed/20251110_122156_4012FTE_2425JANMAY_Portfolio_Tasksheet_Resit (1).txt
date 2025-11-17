@@ -1,0 +1,300 @@
+GRNersy Sue
+
+Student Assignment Brief
+
+This document is intended for Coventry University Group students for their own use in
+completing their assessed work for this module. It must not be passed to third parties or
+posted on any website. If you require this document in an alternative format, please contact
+
+your Module Leader.
+
+Contents:
+
+e §=6Assignment Information
+
+e Assignment Task
+
+e Marking and Feedback
+
+e Assessed Module Learning Outcomes
+
+e Assignment Support and Academic Integrity
+e Assessment Marking Criteria
+
+The work you submit for this assignment must be your own independent work, or in the case of a
+group assignment your own groups’ work. More information is available in the ‘Assignment Task’
+
+section of this assignment brief.
+
+Assignment Information
+
+Module Name: Electronic Systems in Action
+Module Code: 4012FTE
+
+Assignment Title: Logbook
+
+Assignment Due: 30/06/2025, 18:00 UK time
+Assignment Credit: 5 credits
+
+Word Count (or equivalent): 500 words +/- 20%, excluding all illustrations and appendices
+
+Assignment Type:
+
+Pass or Fail (Core Assessment). You will be provided with either a pass or a fail grade. You will have
+4 attempts to successfully complete your assessment before the end of the module.
+
+This document is intended for Coventry University Group students for their own use in completing their
+assessed work for this module. It must not be passed to third parties or posted on any website.
+
+Page 1 of 7
+
+
+Assignment Task
+
+Whilst this module encourages group work (3 person groups maximum) and collaboration
+between students, every student should keep their own, individual, logs for all exercises
+performed during laboratory sessions. These should be in the format of the template
+provided on Aula. Some of those logs, as prescribed in the schedule in Table 1,
+should be submitted as a Portfolio (all logs combined in one MS Word file) for this Core
+assessment. Submission is to be through Aula to Handin via the link that will be provided in
+the module Assignments section.
+
+Session Exercise Completed with:
+Lab 3 Ex. 4 Proteus only
+Lab 4 Ex. 4 Proteus only
+Lab 5 Ex. 3 Proteus only
+Lab 6 Ex. 3 Proteus only
+
+Table 1: Schedule of Portfolio exercise requirements
+
+When completed, the log for each exercise should contain the following:
+1. Aims (your understanding of the intended goal of the exercise)
+
+2. Results (including measurements, snapshots of an oscilloscope, video links, descriptions
+and annotations of outputs, etc. as applicable)
+
+3. Conclusion (you can also discuss your observations, issued encountered (e.g.
+oscilloscope scaling, uneven distribution of light, etc.) and the experiment conclusion)
+
+Please do not write too much. Usually, just a few sentences for each activity on the
+methodology and conclusion parts are enough. Your illustrations and results are to be the
+bulk of your logs, but should be discussed when needed.
+
+Submission Instructions:
+
+e Method of submission: The Logbook Portfolio shall be electronically submitted via the Handin
+link that will be available on the module’s Aula page.
+
+e Formatting of submission: Microsoft Word (*.doc or *.docx) NB. Only use Microsoft Word and
+
+not PDF.
+This document is intended for Coventry University Group students for their own use in completing their P 2 of7
+assessed work for this module. It must not be passed to third parties or posted on any website. age <0
+
+
+Use of (Generative) Artificial Intelligence (Al)
+
+This assessment is in the Amber (Al used to assist) category of the University’s Al use
+framework.
+
+For this assignment,
+
+You may:
+
+- use Al to gain better understanding on topics and techniques involved in the assignment
+- check the validity of results and/or designs you have produced yourself
+
+You may not:
+
+- use Al output directly in your submissions (i.e. copy-pasting entire passages of text, or
+even just sentences). All text in your submission must be of your own writing.
+
+- use Al to produce designs and/or solutions to tasks from your logbook.
+
+You must:
+- acknowledge the use of Al, by ticking the relevant box in the logbook template.
+
+Guidance for students on how Al may be used in assessment is available in the student guidance on
+Al use.
+
+Marking and Feedback
+
+How will my assignment be marked?
+
+Your assignment will be marked by the module team.
+
+How will | receive my grades and feedback?
+
+Provisional marks will be released once internally moderated.
+
+Feedback will be provided by the module team alongside grades release.
+
+It will be accessible via Turnitin and will be in the form of on-page highlighting and comments and/or
+additional comments in the designated field.
+
+Your provisional marks and feedback should be available within 3 weeks (15 working days).
+What will | be marked against?
+
+Details of the marking criteria for this task can be found at the bottom of this assignment brief.
+
+Assessed Module Learning Outcomes
+
+The Learning Outcomes for this module align to the marking criteria which can be found at the end of
+this brief. Ensure you understand the marking criteria to ensure successful achievement of the
+
+assessment task. The following module learning outcomes are assessed in this task:
+
+1. Use test devices and measure circuit parameters using laboratory equipment.
+
+This document is intended for Coventry University Group students for their own use in completing their Page 3 of 7
+assessed work for this module. It must not be passed to third parties or posted on any website. g
+
+
+2. Design, simulate and realise analogue circuits.
+
+Assignment Support and Academic Integrity
+
+If you have any questions about this assignment please see the Student Guidance on Coursework for
+
+more information.
+
+Spelling, Punctuation, and Grammar:
+
+You are expected to use effective, accurate, and appropriate language within this assessment task.
+
+Academic Integrity:
+
+The work you submit must be your own, or in the case of groupwork, that of your group. All sources of
+information need to be acknowledged and attributed; therefore, you must provide references for all
+sources of information and acknowledge any tools used in the production of your work. We use
+
+detection software and make routine checks for evidence of academic misconduct.
+
+It is your responsibility to keep a record of how your thinking has developed as you progress through
+to submission. Appropriate evidence could include: version controlled documents, developmental
+
+sketchbooks, or journals. This evidence can be called upon if we suspect academic misconduct.
+
+If using Artificial Intelligence (Al) tools in the development of your assignment, you must reference
+which tools you have used and for what purposes you have used them. This information must be
+
+acknowledged in your final submission.
+
+Definitions of academic misconduct, including plagiarism, self-plagiarism, and collusion can be
+found on the Student Portal. All cases of suspected academic misconduct are referred for
+investigation, the outcomes of which can have profound consequences to your studies. For more
+information on academic integrity please visit the Academic and Research Integrity section of the
+Student Portal.
+
+Support for Students with Disabilities or Additional Needs:
+If you have a disability, long-term health condition, specific learning difference, mental health
+diagnosis or symptoms and have discussed your support needs with health and wellbeing you may be
+
+able to access support that will help with your studies.
+
+If you feel you may benefit from additional support, but have not disclosed a disability to the
+University, or have disclosed but are yet to discuss your support needs it is important to let us know
+so we can provide the right support for your circumstances. Visit the Student Portal to find out more.
+
+Unable to Submit on Time?
+
+The University wants you to do your best. However, we know that sometimes events happen which
+
+mean that you cannot submit your assessment by the deadline or sit a scheduled exam. If you think
+
+This document is intended for Coventry University Group students for their own use in completing their Page 4 of 7
+assessed work for this module. It must not be passed to third parties or posted on any website. g
+
+
+this might be the case, guidance on understanding what counts as an extenuating circumstance, and
+how to apply is available on the Student Portal.
+
+Administration of Assessment
+
+Module Leader Name: Nik Tsanov
+
+Module Leader Email: ab1816@coventry.ac.uk
+Assignment Category: Portfolio
+
+Attempt Type: Resit
+
+Component Code: Por
+
+This document is intended for Coventry University Group students for their own use in completing their P 5 of 7
+assessed work for this module. It must not be passed to third parties or posted on any website. age 9 0
+
+
+Assessment Marking Criteria
+
+Mark allocation guidelines to students
+
+Work mainly
+incomplete and /or
+weaknesses in most
+areas. Work does
+not demonstrate
+
+Most logs
+completed;
+weaknesses
+outweigh strengths.
+Work does not
+demonstrate
+enough of the key
+required skills and
+competencies.
+
+any of the key
+required skills and
+competencies.
+
+Some logs are
+strong with minor
+weaknesses.
+Some logs are
+missing.
+
+Overall work does
+not demonstrate
+enough of the key
+required
+
+skills and
+competencies.
+
+Most logs present.
+Strengths in all
+elements.
+
+Work demonstrates
+the minimum
+expected level of
+the key required
+skills and
+competencies.
+
+This document is intended for Coventry University Group students for their own use in completing their
+assessed work for this module. It should not be passed to third parties or posted on any website.
+
+All logs present.
+Most work exceeds
+the standard
+expected. Work
+demonstrates most
+of the key required
+skills and
+competencies.
+
+All logs present. All
+work substantially
+exceeds the
+standard expected.
+Work demonstrates
+all of the key
+required skills and
+competencies.
+
+
+
+This document is intended for Coventry University Group students for their own use in completing their f
+assessed work for this module. It should not be passed to third parties or posted on any website. Page 7of7

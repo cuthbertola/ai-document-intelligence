@@ -1,116 +1,79 @@
-"""
-Document Classification Service using Machine Learning
-Classifies documents into: Resume, Invoice, Contract, Letter, Report
-"""
-
+import time
+"""Document Classification Service - Hybrid ML + Rule-based"""
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.pipeline import Pipeline
-import re
+from sklearn.metrics import accuracy_score
 import logging
+from app.services.mlflow_tracker import MLflowTracker
+from app.data.training_data import TRAINING_DOCUMENTS
 
 logger = logging.getLogger(__name__)
 
 class DocumentClassifier:
-    """ML-based document classifier"""
-    
     def __init__(self):
-        self.categories = {
-            'resume': ['resume', 'cv', 'curriculum vitae', 'experience', 'education', 'skills', 
-                      'employment', 'professional', 'qualification', 'objective', 'profile'],
-            'invoice': ['invoice', 'bill', 'payment', 'amount due', 'total', 'subtotal', 
-                       'tax', 'receipt', 'purchase', 'order', 'price', 'quantity'],
-            'contract': ['contract', 'agreement', 'terms', 'conditions', 'party', 'hereby',
-                        'whereas', 'obligations', 'termination', 'breach', 'effective date'],
-            'letter': ['dear', 'sincerely', 'regards', 'yours', 'letter', 'recipient',
-                      'sender', 'correspondence', 'attention', 'subject'],
-            'report': ['report', 'analysis', 'findings', 'conclusion', 'summary', 'results',
-                      'methodology', 'introduction', 'executive summary', 'recommendations']
+        self.categories = list(TRAINING_DOCUMENTS.keys())
+        self.keyword_signals = {
+            'resume': ['resume', 'cv', 'work experience', 'education', 'skills', 'professional summary'],
+            'invoice': ['invoice', 'bill', 'payment', 'amount due', 'total', 'tax', 'due date'],
+            'contract': ['agreement', 'contract', 'terms', 'whereas', 'termination', 'governing law', 'parties agree'],
+            'letter': ['dear', 'sincerely', 'regards', 'writing to', 'thank you', 'looking forward'],
+            'report': ['report', 'analysis', 'findings', 'conclusion', 'executive summary', 'recommendations']
         }
         
-        # Create training data
         self.train_data = []
         self.train_labels = []
+        for category, documents in TRAINING_DOCUMENTS.items():
+            for doc in documents:
+                self.train_data.extend([doc, doc.lower(), doc[:len(doc)//2], doc[len(doc)//2:]])
+                self.train_labels.extend([category] * 4)
         
-        for category, keywords in self.categories.items():
-            for keyword in keywords:
-                # Create sample documents with keywords
-                self.train_data.append(f"{keyword} " * 10)
-                self.train_labels.append(category)
-        
-        # Build ML pipeline
+        logger.info(f"Training with {len(self.train_data)} examples")
         self.pipeline = Pipeline([
-            ('tfidf', TfidfVectorizer(max_features=100, ngram_range=(1, 2))),
-            ('clf', MultinomialNB())
+            ('tfidf', TfidfVectorizer(max_features=1000, ngram_range=(1,4), min_df=1, max_df=0.9)),
+            ('clf', GradientBoostingClassifier(n_estimators=200, learning_rate=0.1, max_depth=5, random_state=42))
         ])
-        
-        # Train the model
         self.pipeline.fit(self.train_data, self.train_labels)
-        logger.info("Document classifier trained successfully")
+        accuracy = accuracy_score(self.train_labels, self.pipeline.predict(self.train_data))
+        logger.info(f"Training accuracy: {accuracy:.2%}")
+        self.mlflow_tracker = MLflowTracker()
     
     def classify(self, text: str) -> dict:
-        """
-        Classify document text
-        Returns: {'category': str, 'confidence': float, 'all_scores': dict}
-        """
         if not text or len(text.strip()) < 10:
-            return {
-                'category': 'Unknown',
-                'confidence': 0.0,
-                'all_scores': {}
-            }
-        
-        # Clean text
-        text = text.lower()
-        text = re.sub(r'[^a-z\s]', ' ', text)
-        
-        # Get predictions
+            return {'category': 'Unknown', 'confidence': 0.0, 'all_scores': {}}
         try:
-            prediction = self.pipeline.predict([text])[0]
-            probabilities = self.pipeline.predict_proba([text])[0]
+            text_lower = text.lower()
+            keyword_counts = {cat: sum(1 for kw in keywords if kw in text_lower) 
+                            for cat, keywords in self.keyword_signals.items()}
+            max_keywords = max(keyword_counts.values())
             
-            # Get all category scores
-            all_scores = {}
-            for idx, category in enumerate(self.pipeline.classes_):
-                all_scores[category] = round(float(probabilities[idx]) * 100, 2)
+            ml_probs = self.pipeline.predict_proba([text])[0]
+            ml_scores = {cat: float(ml_probs[idx])*100 for idx, cat in enumerate(self.pipeline.classes_)}
             
-            confidence = max(probabilities) * 100
+            if max_keywords >= 3:
+                best_cat = max(keyword_counts, key=keyword_counts.get)
+                confidence = 75 + (keyword_counts[best_cat] * 5)
+                scores = {cat: (min(confidence,95) if cat==best_cat else ml_scores.get(cat,1)*0.2) 
+                         for cat in self.categories}
+            else:
+                scores = {cat: ml_scores.get(cat,0) + keyword_counts.get(cat,0)*12 
+                         for cat in self.categories}
             
-            return {
-                'category': prediction.title(),
-                'confidence': round(confidence, 2),
-                'all_scores': all_scores
-            }
+            total = sum(scores.values())
+            scores = {k: (v/total)*100 for k,v in scores.items()} if total>0 else scores
+            best = max(scores, key=scores.get)
+            
+            result = {'category': best.title(), 'confidence': round(scores[best],2),
+                     'all_scores': {k: round(v,2) for k,v in scores.items()}}
+            try:
+                self.mlflow_tracker.log_classification(text[:50], result)
+            except: pass
+            return result
         except Exception as e:
             logger.error(f"Classification error: {e}")
-            return {
-                'category': 'Unknown',
-                'confidence': 0.0,
-                'all_scores': {}
-            }
-    
-    def classify_by_keywords(self, text: str) -> dict:
-        """Fallback: simple keyword-based classification"""
-        text_lower = text.lower()
-        scores = {}
-        
-        for category, keywords in self.categories.items():
-            score = sum(1 for keyword in keywords if keyword in text_lower)
-            scores[category] = score
-        
-        if max(scores.values()) > 0:
-            best_category = max(scores, key=scores.get)
-            confidence = (scores[best_category] / sum(scores.values())) * 100
-            return {
-                'category': best_category.title(),
-                'confidence': round(confidence, 2)
-            }
-        
-        return {'category': 'Unknown', 'confidence': 0.0}
+            return {'category': 'Unknown', 'confidence': 0.0, 'all_scores': {}}
 
-# Singleton
 _classifier = None
-
 def get_classifier():
     global _classifier
     if _classifier is None:
