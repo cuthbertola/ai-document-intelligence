@@ -387,14 +387,6 @@ tests/test_ner.py::test_entity_extraction PASSED
 
 ## 📸 Screenshots
 
-### Dashboard
-![Dashboard](https://via.placeholder.com/800x400/2d3748/edf2f4?text=Dashboard+View)
-
-### Document Processing
-![Processing](https://via.placeholder.com/800x400/2d3748/edf2f4?text=Document+Processing)
-
-### MLflow Tracking
-![MLflow](https://via.placeholder.com/800x400/2d3748/edf2f4?text=MLflow+Experiment+Tracking)
 
 ---
 
