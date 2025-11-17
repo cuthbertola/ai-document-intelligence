@@ -406,7 +406,7 @@ Machine Learning Engineer passionate about building production-grade AI systems.
 
 - 📧 Email: badekaleolawale@gmail.com
 - 💼 LinkedIn: [linkedin.com/in/olawale-badekale](https://linkedin.com/in/olawale-badekale)
-- 🐙 GitHub: [@olawale-badekale](https://github.com/olawale-badekale)
+- 🐙 GitHub: [@cuthbertola](https://github.com/olawale-badekale)
 - 📍 Location: Aberdeen, UK
 
 **Other Projects:**
