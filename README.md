@@ -387,14 +387,6 @@ tests/test_ner.py::test_entity_extraction PASSED
 
 ## 📸 Screenshots
 
-
----
-
-
----
-
-## 📸 Screenshots
-
 ### Dashboard Overview
 ![Dashboard](docs/screenshots/dashboard.png)
 *Main dashboard showing 10 total documents, 65.2% average confidence, and OCR online status*
